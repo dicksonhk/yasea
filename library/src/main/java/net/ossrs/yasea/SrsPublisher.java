@@ -4,6 +4,7 @@ import android.hardware.Camera;
 import android.media.AudioRecord;
 import android.media.audiofx.AcousticEchoCanceler;
 import android.media.audiofx.AutomaticGainControl;
+import android.util.Log;
 
 import com.github.faucamp.simplertmp.RtmpHandler;
 import com.seu.magicfilter.utils.MagicFilterType;
@@ -198,7 +199,15 @@ public class SrsPublisher {
         }
     }
     public boolean startRecord(String recPath) {
-        return mMp4Muxer != null && mMp4Muxer.record(new File(recPath));
+//        return mMp4Muxer != null && mMp4Muxer.record(new File(recPath));
+        if (mMp4Muxer != null) {
+            startEncode();
+            boolean result = mMp4Muxer.record(new File(recPath));
+            Log.e("SrsPublisher", String.format("startRecord result: %s", result));
+            return result;
+        } else {
+            return false;
+        }
     }
 
     public void stopRecord() {

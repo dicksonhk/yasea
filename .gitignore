@@ -7,3 +7,6 @@
 /build
 /captures
 .idea
+.idea/
+.gradle/
+.cxx/

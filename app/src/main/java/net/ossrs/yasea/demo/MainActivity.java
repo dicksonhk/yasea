@@ -46,7 +46,8 @@ public class MainActivity extends AppCompatActivity implements RtmpHandler.RtmpL
     private Button btnPause;
 
     private SharedPreferences sp;
-    private String rtmpUrl = "rtmp://ossrs.net/" + getRandomAlphaString(3) + '/' + getRandomAlphaDigitString(5);
+//    private String rtmpUrl = "rtmp://ossrs.net/" + getRandomAlphaString(3) + '/' + getRandomAlphaDigitString(5);
+    private String rtmpUrl = "rtmp://live-push.bilivideo.com/live-bvc/" + "?streamname=live_574012814_82567615&key=8a91f1087409d56f62e972b698d2a9d0&schedule=rtmp&pflag=1";
     private String recPath = Environment.getExternalStorageDirectory().getPath() + "/test.mp4";
 
     private SrsPublisher mPublisher;
@@ -102,6 +103,8 @@ public class MainActivity extends AppCompatActivity implements RtmpHandler.RtmpL
     }
 
     private void init() {
+        Log.e(TAG, String.format("init recPath: %s", recPath));
+        Log.e(TAG, String.format("init rtmpUrl: %s", rtmpUrl));
         // restore data.
         sp = getSharedPreferences("Yasea", MODE_PRIVATE);
         rtmpUrl = sp.getString("rtmpUrl", rtmpUrl);
@@ -190,8 +193,13 @@ public class MainActivity extends AppCompatActivity implements RtmpHandler.RtmpL
             @Override
             public void onClick(View v) {
                 if (btnRecord.getText().toString().contentEquals("record")) {
+                    recPath = getExternalFilesDir(null).getAbsolutePath() + "/test" + System.currentTimeMillis() + ".mp4";
+                    Log.e(TAG, String.format("startRecord recPath: %s", recPath));
                     if (mPublisher.startRecord(recPath)) {
                         btnRecord.setText("pause");
+                        mPublisher.startCamera();
+                    } else {
+                        Log.e(TAG, "startRecord failed!");
                     }
                 } else if (btnRecord.getText().toString().contentEquals("pause")) {
                     mPublisher.pauseRecord();
@@ -356,6 +364,7 @@ public class MainActivity extends AppCompatActivity implements RtmpHandler.RtmpL
 
     private void handleException(Exception e) {
         try {
+            Log.e(TAG, "handleException " + e.getMessage());
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             mPublisher.stopPublish();
             mPublisher.stopRecord();
