@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements RtmpHandler.RtmpL
     private Button btnRecord;
     private Button btnSwitchEncoder;
     private Button btnPause;
+    private Button btnRePause;
 
     private SharedPreferences sp;
 //    private String rtmpUrl = "rtmp://ossrs.net/" + getRandomAlphaString(3) + '/' + getRandomAlphaDigitString(5);
@@ -119,6 +120,8 @@ public class MainActivity extends AppCompatActivity implements RtmpHandler.RtmpL
         btnSwitchEncoder = (Button) findViewById(R.id.swEnc);
         btnPause = (Button) findViewById(R.id.pause);
         btnPause.setEnabled(false);
+        btnRePause = (Button) findViewById(R.id.repause);
+        btnRePause.setEnabled(false);
         mCameraView = (SrsCameraView) findViewById(R.id.glsurfaceview_camera);
 
         mPublisher = new SrsPublisher(mCameraView);
@@ -161,9 +164,7 @@ public class MainActivity extends AppCompatActivity implements RtmpHandler.RtmpL
                     btnPause.setEnabled(true);
                 } else if (btnPublish.getText().toString().contentEquals("stop")) {
                     mPublisher.stopPublish();
-                    mPublisher.stopRecord();
                     btnPublish.setText("publish");
-                    btnRecord.setText("record");
                     btnSwitchEncoder.setEnabled(true);
                     btnPause.setEnabled(false);
                 }
@@ -198,15 +199,30 @@ public class MainActivity extends AppCompatActivity implements RtmpHandler.RtmpL
                     if (mPublisher.startRecord(recPath)) {
                         btnRecord.setText("pause");
                         mPublisher.startCamera();
+                        btnRecord.setText("stop");
+                        btnSwitchEncoder.setEnabled(false);
+                        btnRePause.setEnabled(true);
                     } else {
+                        Toast.makeText(getApplicationContext(), "startRecord failed!", Toast.LENGTH_SHORT).show();
                         Log.e(TAG, "startRecord failed!");
                     }
-                } else if (btnRecord.getText().toString().contentEquals("pause")) {
+                } else if (btnRecord.getText().toString().contentEquals("stop")) {
+                    mPublisher.stopRecord();
+                    btnRecord.setText("record");
+                    btnSwitchEncoder.setEnabled(true);
+                    btnRePause.setEnabled(false);
+                }
+            }
+        });
+        btnRePause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(btnRePause.getText().toString().equals("RePause")){
                     mPublisher.pauseRecord();
-                    btnRecord.setText("resume");
-                } else if (btnRecord.getText().toString().contentEquals("resume")) {
+                    btnRePause.setText("ReResume");
+                }else{
                     mPublisher.resumeRecord();
-                    btnRecord.setText("pause");
+                    btnRePause.setText("RePause");
                 }
             }
         });
@@ -311,13 +327,11 @@ public class MainActivity extends AppCompatActivity implements RtmpHandler.RtmpL
         super.onResume();
         final Button btn = (Button) findViewById(R.id.publish);
         btn.setEnabled(true);
-        mPublisher.resumeRecord();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mPublisher.pauseRecord();
     }
 
     @Override

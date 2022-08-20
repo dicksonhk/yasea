@@ -43,6 +43,13 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="RePause"
+        android:id="@+id/repause"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/record" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="record"
         android:id="@+id/record"
         android:layout_alignBottom="@+id/publish"

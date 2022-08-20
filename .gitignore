@@ -10,3 +10,6 @@
 .idea/
 .gradle/
 .cxx/
+x64/
+[Bb]in/
+[Oo]bj/

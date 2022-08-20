@@ -103,11 +103,13 @@ public class SrsPublisher {
                         } catch (InterruptedException e) {
                             break;
                         }
-                    } else {
+                    } else if (mic != null) {
                         int size = mic.read(mPcmBuffer, 0, mPcmBuffer.length);
                         if (size > 0) {
                             mEncoder.onGetPcmFrame(mPcmBuffer, size);
                         }
+                    } else {
+                        Log.e("SrsPublisher", "startAudio run fail by mic is null.");
                     }
                 }
             }
@@ -212,6 +214,7 @@ public class SrsPublisher {
 
     public void stopRecord() {
         if (mMp4Muxer != null) {
+            stopEncode();
             mMp4Muxer.stop();
         }
     }
